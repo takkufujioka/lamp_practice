@@ -1,15 +1,18 @@
 <?php
 
+// var_dumpするための関数
 function dd($var){
   var_dump($var);
   exit();
 }
 
+// 特定のページに飛ぶための関数
 function redirect_to($url){
   header('Location: ' . $url);
   exit;
 }
 
+// GET方式で送信されたデータを取得
 function get_get($name){
   if(isset($_GET[$name]) === true){
     return $_GET[$name];
@@ -17,6 +20,7 @@ function get_get($name){
   return '';
 }
 
+// POST方式で送信されたデータを取得
 function get_post($name){
   if(isset($_POST[$name]) === true){
     return $_POST[$name];
@@ -24,6 +28,7 @@ function get_post($name){
   return '';
 }
 
+// ファイル名を取得
 function get_file($name){
   if(isset($_FILES[$name]) === true){
     return $_FILES[$name];
@@ -31,6 +36,7 @@ function get_file($name){
   return array();
 }
 
+// セッションネームの取得
 function get_session($name){
   if(isset($_SESSION[$name]) === true){
     return $_SESSION[$name];
@@ -38,6 +44,7 @@ function get_session($name){
   return '';
 }
 
+// セッションネームを設定
 function set_session($name, $value){
   $_SESSION[$name] = $value;
 }
@@ -55,14 +62,17 @@ function get_errors(){
   return $errors;
 }
 
+// エラーが存在するかどうかチェック
 function has_error(){
   return isset($_SESSION['__errors']) && count($_SESSION['__errors']) !== 0;
 }
 
+// メッセージを設定
 function set_message($message){
   $_SESSION['__messages'][] = $message;
 }
 
+// メッセージが設定されていればメッセージを取得
 function get_messages(){
   $messages = get_session('__messages');
   if($messages === ''){
@@ -135,6 +145,7 @@ function is_valid_upload_image($image){
   return true;
 }
 
+// 文字列をエスケープ
 function h($str){
   return htmlspecialchars($str,ENT_QUOTES,'UTF-8');
 }

@@ -18,6 +18,7 @@ if(is_admin($user) === false){
   redirect_to(LOGIN_URL);
 }
 
+// POST送信された商品IDを取得
 $item_id = get_post('item_id');
 
 

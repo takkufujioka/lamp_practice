@@ -1,7 +1,10 @@
 <?php 
+// 共通関数ファイルの読み込み
 require_once MODEL_PATH . 'functions.php';
+// データベース接続に関するファイルの読み込み
 require_once MODEL_PATH . 'db.php';
 
+// データベースから特定のユーザーのカート情報を取得
 function get_user_carts($db, $user_id){
   $sql = "
     SELECT

@@ -1,7 +1,10 @@
 <?php
+// 共通関数ファイルの読み込み
 require_once MODEL_PATH . 'functions.php';
+// データベースに関する関数ファイルの読み込み
 require_once MODEL_PATH . 'db.php';
 
+// 指定のユーザーIDのユーザー情報の取得
 function get_user($db, $user_id){
   $sql = "
     SELECT
@@ -19,6 +22,7 @@ function get_user($db, $user_id){
   return fetch_query($db, $sql);
 }
 
+// 指定のユーザー名のユーザー情報を取得
 function get_user_by_name($db, $name){
   $sql = "
     SELECT
@@ -36,6 +40,7 @@ function get_user_by_name($db, $name){
   return fetch_query($db, $sql);
 }
 
+// 指定のユーザー名もしくはパスワードを存在するかチェックし、存在すればセッションにユーザーIDを登録
 function login_as($db, $name, $password){
   $user = get_user_by_name($db, $name);
   if($user === false || $user['password'] !== $password){
@@ -45,12 +50,14 @@ function login_as($db, $name, $password){
   return $user;
 }
 
+// セッションからユーザーIDを取得し、ユーザー情報を取得
 function get_login_user($db){
   $login_user_id = get_session('user_id');
 
   return get_user($db, $login_user_id);
 }
 
+// ユーザー名、パスワードのチェックに問題がなければデータベースにユーザー情報を登録
 function regist_user($db, $name, $password, $password_confirmation) {
   if( is_valid_user($name, $password, $password_confirmation) === false){
     return false;
@@ -63,6 +70,7 @@ function is_admin($user){
   return $user['type'] === USER_TYPE_ADMIN;
 }
 
+// ユーザー名、パスワードが既定の形式であるかチェック
 function is_valid_user($name, $password, $password_confirmation){
   // 短絡評価を避けるため一旦代入。
   $is_valid_user_name = is_valid_user_name($name);
@@ -70,6 +78,7 @@ function is_valid_user($name, $password, $password_confirmation){
   return $is_valid_user_name && $is_valid_password ;
 }
 
+// ユーザー名が既定の形式かどうかチェック
 function is_valid_user_name($name) {
   $is_valid = true;
   if(is_valid_length($name, USER_NAME_LENGTH_MIN, USER_NAME_LENGTH_MAX) === false){
@@ -83,6 +92,7 @@ function is_valid_user_name($name) {
   return $is_valid;
 }
 
+// パスワードが既定の形式かどうか、またパスワードと確認用パスワードが一致するかどうかチェック
 function is_valid_password($password, $password_confirmation){
   $is_valid = true;
   if(is_valid_length($password, USER_PASSWORD_LENGTH_MIN, USER_PASSWORD_LENGTH_MAX) === false){
@@ -100,6 +110,7 @@ function is_valid_password($password, $password_confirmation){
   return $is_valid;
 }
 
+// ユーザー情報を登録
 function insert_user($db, $name, $password){
   $sql = "
     INSERT INTO
