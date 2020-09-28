@@ -68,6 +68,7 @@
             <td>
               <form method="post" action="admin_change_stock.php">
                 <div class="form-group">
+                  
                   <input  type="number" name="stock" value="<?php print($item['stock']); ?>">
                   個
                 </div>
