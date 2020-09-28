@@ -7,6 +7,13 @@ require_once MODEL_PATH . 'cart.php';
 
 session_start();
 
+// トークンの照合
+$post_token = get_post('token');
+if(is_valid_csrf_token($post_token) === false) {
+  set_error('不正なリクエストです。');
+  redirect_to(CART_URL);
+}
+
 if(is_logined() === false){
   redirect_to(LOGIN_URL);
 }
@@ -22,5 +29,8 @@ if(update_cart_amount($db, $cart_id, $amount)){
 } else {
   set_error('購入数の更新に失敗しました。');
 }
+
+// トークンを破棄
+unset($_SESSION['csrf_token']);
 
 redirect_to(CART_URL);

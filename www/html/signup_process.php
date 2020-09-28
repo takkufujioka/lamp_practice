@@ -5,6 +5,13 @@ require_once MODEL_PATH . 'user.php';
 
 session_start();
 
+// トークンの照合
+$post_token = get_post('token');
+if(is_valid_csrf_token($post_token) === false) {
+  set_error('不正なリクエストです。');
+  redirect_to(SIGNUP_URL);
+}
+
 if(is_logined() === true){
   redirect_to(HOME_URL);
 }
@@ -28,4 +35,8 @@ try{
 
 set_message('ユーザー登録が完了しました。');
 login_as($db, $name, $password);
+
+// トークンを破棄
+unset($_SESSION['csrf_token']);
+
 redirect_to(HOME_URL);

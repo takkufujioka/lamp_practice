@@ -12,8 +12,8 @@ require_once MODEL_PATH . 'item.php';
 session_start();
 
 // トークンの照合
-$token = get_session('csrf_token');
-if(is_valid_csrf_token($token) === false) {
+$post_token = get_post('token');
+if(is_valid_csrf_token($post_token) === false) {
   set_error('不正なリクエストです。');
   redirect_to(ADMIN_URL);
 }
