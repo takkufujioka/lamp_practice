@@ -7,6 +7,9 @@ require_once MODEL_PATH . 'cart.php';
 
 session_start();
 
+// トークンを生成
+$token = get_csrf_token();
+
 if(is_logined() === false){
   redirect_to(LOGIN_URL);
 }

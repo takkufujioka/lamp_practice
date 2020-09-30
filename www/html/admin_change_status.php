@@ -11,6 +11,13 @@ require_once MODEL_PATH . 'item.php';
 // ログインチェックのため、セッション開始
 session_start();
 
+// トークンの照合
+$post_token = get_post('token');
+if(is_valid_csrf_token($post_token) === false) {
+  set_error('不正なリクエストです。');
+  redirect_to(ADMIN_URL);
+}
+
 // ログインチェック用関数利用
 if(is_logined() === false){
   // ログインされていなければ、ログイン画面へ遷移
@@ -51,6 +58,9 @@ if($changes_to === 'open'){
   // エラーメッセージを設定
   set_error('不正なリクエストです。');
 }
+
+// トークンを破棄
+unset($_SESSION['csrf_token']);
 
 // 管理画面へリダイレクト
 redirect_to(ADMIN_URL);

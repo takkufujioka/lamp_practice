@@ -7,6 +7,13 @@ require_once MODEL_PATH . 'item.php';
 // ログインしているかどうかチェックのためセッションスタート
 session_start();
 
+// トークンの照合
+$post_token = get_post('token');
+if(is_valid_csrf_token($post_token) === false) {
+  set_error('不正なリクエストです。');
+  redirect_to(ADMIN_URL);
+}
+
 // ログインチェックの関数利用
 if(is_logined() === false){
   // してなければログインページへ
@@ -37,6 +44,9 @@ if(update_item_stock($db, $item_id, $stock)){
   // 失敗したら、エラーメッセージを設定
   set_error('在庫数の変更に失敗しました。');
 }
+
+// トークンを破棄
+unset($_SESSION['csrf_token']);
 
 // 商品管理ページにリダイレクト
 redirect_to(ADMIN_URL);
