@@ -167,21 +167,3 @@ function validate_cart_purchase($carts){
   return true;
 }
 
-// 購入履歴と購入明細の登録とカートからの商品の削除をトランザクション
-function purchase_carts_transaction() {
-  $db->beginTransaction();
-  if()
-}
-
-// 購入履歴を登録
-function insert_history($db, $user_id) {
-  $sql = "
-    INSERT INTO
-      history(
-        user_id
-      )
-    VALUES(?)
-  ";
-
-  return execute_query($db, $sql, [$user_id])
-}
