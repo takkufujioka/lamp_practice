@@ -4,7 +4,6 @@ CREATE TABLE 'history' (
   'order_number' int(11) NOT NULL AUTO_INCREMENT,
   'user_id' int(11) NOT NULL,
   'purchased' datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  UPDATE CURRENT_TIMESTAMP
 );
 
 --
@@ -15,7 +14,6 @@ CREATE TABLE 'history' (
 CREATE TABLE 'details' (
   'order_number' int(11) NOT NULL,
   'cart_id' int(11) NOT NULL,
-  UPDATE CURRENT_TIMESTAMP
 );
 
 --
