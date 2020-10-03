@@ -13,7 +13,9 @@ CREATE TABLE 'history' (
 
 CREATE TABLE 'details' (
   'order_number' int(11) NOT NULL,
-  'cart_id' int(11) NOT NULL,
+  'name' varchar(100) NOT NULL,
+  'price' int(11) NOT NULL,
+  'amount' int(11) NOT NULL,
 );
 
 --
