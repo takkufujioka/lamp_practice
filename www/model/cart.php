@@ -24,9 +24,9 @@ function get_user_carts($db, $user_id){
     ON
       carts.item_id = items.item_id
     WHERE
-      carts.user_id = {$user_id}
+      carts.user_id = ?
   ";
-  return fetch_all_query($db, $sql);
+  return fetch_all_query($db, $sql, [$user_id]);
 }
 
 // ログイン中のユーザーのカート情報を取得
