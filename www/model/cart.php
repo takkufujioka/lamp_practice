@@ -184,7 +184,7 @@ function purchase_carts_transaction($db, $user_id, $carts) {
 function insert_history($db, $user_id) {
   $sql = "
     INSERT INTO
-      history(
+      histories(
         user_id
       )
     VALUES(?)

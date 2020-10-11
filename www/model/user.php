@@ -121,35 +121,56 @@ function insert_user($db, $name, $hash){
   return execute_query($db, $sql, [$name, $hash]);
 }
 
-// ユーザーの購入履歴を表示
-function get_all_history($db) {
+// 全ての購入履歴を取得
+function get_all_histories($db) {
   $sql = "
     SELECT
       order_number,
       user_id,
       purchased
     FROM
-      history
+      histories
+    ORDER BY
+      order_number DESC
   ";
 
   return fetch_all_query($db, $sql);
 }
 
-function get_user_history($db, $user_id) {
+// 特定のユーザーの購入履歴を取得
+function get_user_histories($db, $user_id) {
   $sql = "
     SELECT
       order_number,
       user_id,
       purchased
     FROM
-      history
+      histories
     WHERE
       user_id = ?
+    ORDER BY
+      order_number DESC
   ";
 
   return fetch_all_query($db, $sql, [$user_id]);
 }
 
+// 特定の注文番号の購入履歴を取得
+function get_history_by_order_number($db, $order_number) {
+  $sql = "
+    SELECT
+      order_number,
+      user_id,
+      purchased
+    FROM
+      histories
+    WHERE
+      order_number = ?
+  ";
+  return fetch_query($db, $sql, [$order_number]);
+}
+
+// 特定の注文番号の購入明細を取得
 function get_details($db, $order_number) {
   $sql = "
     SELECT
@@ -164,4 +185,12 @@ function get_details($db, $order_number) {
   ";
 
   return fetch_all_query($db, $sql, [$order_number]);
+}
+
+// 購入明細の合計金額を計算
+function sum_details($db, $history) {
+  $total_price = 0;
+  $details = get_details($db, $history['order_number']);
+  $total_price = sum_carts($details);
+  return $total_price;
 }

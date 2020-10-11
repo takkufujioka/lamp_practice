@@ -15,9 +15,13 @@ if(is_logined() === false){
 }
 
 $db = get_db_connect();
+
 $user = get_login_user($db);
-$history = get_all_history($db, $user['user_id']);
-$details = get_details($db, $history['order_number']);
-dd($history);
+
+$histories = get_all_histories($db);
+
+$user_histories = get_user_histories($db, $user['user_id']);
+
+include_once VIEW_PATH . '/history_view.php';
 ?> 
 
