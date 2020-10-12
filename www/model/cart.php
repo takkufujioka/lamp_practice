@@ -24,9 +24,9 @@ function get_user_carts($db, $user_id){
     ON
       carts.item_id = items.item_id
     WHERE
-      carts.user_id = {$user_id}
+      carts.user_id = ?
   ";
-  return fetch_all_query($db, $sql);
+  return fetch_all_query($db, $sql, [$user_id]);
 }
 
 // ログイン中のユーザーのカート情報を取得
@@ -114,6 +114,7 @@ function purchase_carts($db, $carts){
   if(validate_cart_purchase($carts) === false){
     return false;
   }
+  purchase_carts_transaction($db, $carts[0]['user_id'], $carts);
   foreach($carts as $cart){
     if(update_item_stock(
         $db, 
@@ -167,3 +168,50 @@ function validate_cart_purchase($carts){
   return true;
 }
 
+// 購入履歴と購入明細の登録とカートからの商品の削除をトランザクション
+function purchase_carts_transaction($db, $user_id, $carts) {
+  $db->beginTransaction();
+  if(insert_history($db, $user_id)
+    && insert_details($db, $carts)){
+    $db->commit();
+    return true;
+  }
+  $db->rollback();
+  return false;
+}
+
+// 購入履歴を登録
+function insert_history($db, $user_id) {
+  $sql = "
+    INSERT INTO
+      histories(
+        user_id
+      )
+    VALUES(?)
+  ";
+
+  return execute_query($db, $sql, [$user_id]);
+}
+
+// 購入明細を登録
+function insert_details($db, $carts) {
+  $result = true;
+  $order_number = $db->lastInsertId();
+  foreach($carts as $cart) {
+      $sql = "
+        INSERT INTO
+          details(
+            order_number,
+            name,
+            price,
+            amount
+          )
+        VALUES(?, ?, ?, ?)
+      ";
+      $tmp = execute_query($db, $sql, [$order_number, $cart['name'], $cart['price'], $cart['amount']]);
+      if($tmp === false) {
+        $result = $tmp;
+      }
+  }
+  return $result;
+}

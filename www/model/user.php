@@ -43,7 +43,7 @@ function get_user_by_name($db, $name){
 // 指定のユーザー名もしくはパスワードを存在するかチェックし、存在すればセッションにユーザーIDを登録
 function login_as($db, $name, $password){
   $user = get_user_by_name($db, $name);
-  if($user === false || $user['password'] !== $password){
+  if($user === false || password_verify($password, $user['password']) === false) {
     return false;
   }
   set_session('user_id', $user['user_id']);
@@ -58,12 +58,12 @@ function get_login_user($db){
 }
 
 // ユーザー名、パスワードのチェックに問題がなければデータベースにユーザー情報を登録
-function regist_user($db, $name, $password, $password_confirmation) {
+function regist_user($db, $name, $password, $password_confirmation, $hash) {
   if( is_valid_user($name, $password, $password_confirmation) === false){
     return false;
   }
   
-  return insert_user($db, $name, $password);
+  return insert_user($db, $name, $hash);
 }
 
 function is_admin($user){
@@ -111,13 +111,86 @@ function is_valid_password($password, $password_confirmation){
 }
 
 // ユーザー情報を登録
-function insert_user($db, $name, $password){
+function insert_user($db, $name, $hash){
   $sql = "
     INSERT INTO
       users(name, password)
     VALUES (?, ?);
   ";
 
-  return execute_query($db, $sql, [$name, $password]);
+  return execute_query($db, $sql, [$name, $hash]);
 }
 
+// 全ての購入履歴を取得
+function get_all_histories($db) {
+  $sql = "
+    SELECT
+      order_number,
+      user_id,
+      purchased
+    FROM
+      histories
+    ORDER BY
+      order_number DESC
+  ";
+
+  return fetch_all_query($db, $sql);
+}
+
+// 特定のユーザーの購入履歴を取得
+function get_user_histories($db, $user_id) {
+  $sql = "
+    SELECT
+      order_number,
+      user_id,
+      purchased
+    FROM
+      histories
+    WHERE
+      user_id = ?
+    ORDER BY
+      order_number DESC
+  ";
+
+  return fetch_all_query($db, $sql, [$user_id]);
+}
+
+// 特定の注文番号の購入履歴を取得
+function get_history_by_order_number($db, $order_number) {
+  $sql = "
+    SELECT
+      order_number,
+      user_id,
+      purchased
+    FROM
+      histories
+    WHERE
+      order_number = ?
+  ";
+  return fetch_query($db, $sql, [$order_number]);
+}
+
+// 特定の注文番号の購入明細を取得
+function get_details($db, $order_number) {
+  $sql = "
+    SELECT
+      order_number,
+      name,
+      price,
+      amount
+    FROM
+      details
+    WHERE
+      order_number = ?
+  ";
+
+  return fetch_all_query($db, $sql, [$order_number]);
+}
+
+// 購入明細の合計金額を計算
+function sum_details($db, $history) {
+  $total_price = 0;
+  $details = get_details($db, $history['order_number']);
+  $total_price = sum_carts($details);
+  return $total_price;
+}
